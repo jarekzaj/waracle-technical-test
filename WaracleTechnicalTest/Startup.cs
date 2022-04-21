@@ -47,23 +47,11 @@ namespace WaracleTechnicalTest.API
         {
 
             app.UseSwagger();
-            if (env.IsDevelopment())
-            {
-                app.UseSwaggerUI();
-            }
-            if (!env.IsDevelopment())
-            {
-                app.UseSwaggerUI(options =>
-                {
-                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-                    options.RoutePrefix = string.Empty;
-                });
-            }
 
-            if (env.IsDevelopment())
-            {
+                app.UseSwaggerUI();
+
                 app.UseDeveloperExceptionPage();
-            }
+
 
             app.UseHttpsRedirection();
 
