@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WaracleTechnicalTest.API.Config;
 
 namespace WaracleTechnicalTest.API
 {
@@ -20,6 +21,11 @@ namespace WaracleTechnicalTest.API
         {
             services.AddControllers();
             services.AddSwaggerGen();
+
+            services.AddOptions<CosmosDbConfiguration>().Configure<IConfiguration>((settings, configuration) =>
+            {
+                configuration.GetSection("CosmosDbConfiguration").Bind(settings);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -29,13 +35,9 @@ namespace WaracleTechnicalTest.API
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                if (env.IsDevelopment() || env.IsProduction())
-
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Test Api");
-                    c.RoutePrefix = string.Empty;
-                }
-            });
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Test Api");
+                c.RoutePrefix = string.Empty;
+             });
 
             if (env.IsDevelopment())
             {
