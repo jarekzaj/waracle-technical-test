@@ -1,0 +1,109 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+  - main
+
+pool:
+  vmImage: "windows-latest"
+
+variables:
+  solution: "**/*.sln"
+  buildPlatform: "Any CPU"
+  buildConfiguration: "Release"
+
+stages:
+  - stage: Build
+    jobs:
+      - job: BuildApplication
+        pool:
+          demands:
+            - DotNetFramework
+        steps:
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: "test"
+              projects: "**/*Tests.csproj"
+            displayName: "Unit Tests"
+          - script: |
+              dotnet restore -s projects 
+              dotnet build --configuration $(buildConfiguration)
+            displayName: "build and restore"
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: publish
+              arguments: "--configuration $(buildConfiguration) --output $(System.DefaultWorkingDirectory)/publish_output"
+              projects: "**/WaracleTest.csproj"
+              publishWebProjects: false
+              modifyOutputPath: true
+              zipAfterPublish: false
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: "$(System.DefaultWorkingDirectory)/publish_output"
+              artifact: "drop"
+              publishLocation: "pipeline"
+
+  - stage: DeployDev
+    variables:
+      - group: WaracleTest-Dev-Variable-Group
+    jobs:
+      - job: DeployToDevInAzure
+        displayName: "Deploy To Dev in Azure"
+        steps:
+          - checkout: self
+          - task: TerraformInstaller@0
+            displayName: "Install terraform"
+            inputs:
+              terraformVersion: "0.12.24"
+          - task: DownloadPipelineArtifact@2
+            displayName: "Download artifacts"
+            inputs:
+              buildType: "current"
+              artifactName: "drop"
+              targetPath: '$(System.DefaultWorkingDirectory)\artifact'
+          - task: Bash@3
+            name: PlanTerraform
+            displayName: Plan Terraform
+            inputs:
+              targetType: "inline"
+              workingDirectory: "$(System.DefaultWorkingDirectory)/Deployment"
+              script: |
+                terraform init -backend-config="storage_account_name=waracletestdevtf" -backend-config="resource_group_name=m-config-waracletest-dev"
+                echo "Execute Terraform plan"
+                terraform plan -out=tfplan -input=false
+            env:
+              ARM_SUBSCRIPTION_ID: $(TERRAFORM-SUBSCRIPTION-ID)
+              ARM_TENANT_ID: $(TERRAFORM-TENANT-ID)
+              ARM_ACCESS_KEY: $(TERRAFORM-ACCESS-KEY)
+              ARM_CLIENT_ID: $(TERRAFORM-CLIENT-ID)
+              ARM_CLIENT_SECRET: $(TERRAFORM-CLIENT-SECRET)
+              TF_VAR_ENV: dev
+
+          - task: Bash@3
+            name: ApplyTerraform
+            displayName: Apply Terraform
+            condition: succeeded()
+            inputs:
+              targetType: "inline"
+              script: |
+                echo "Execute Terraform apply"
+                                        terraform apply "tfplan"
+              workingDirectory: "$(System.DefaultWorkingDirectory)/Deployment/"
+              failOnStderr: true
+            env:
+              ARM_SUBSCRIPTION_ID: $(TERRAFORM-SUBSCRIPTION-ID)
+              ARM_TENANT_ID: $(TERRAFORM-TENANT-ID)
+              ARM_ACCESS_KEY: $(TERRAFORM-ACCESS-KEY)
+              ARM_CLIENT_ID: $(TERRAFORM-CLIENT-ID)
+              ARM_CLIENT_SECRET: $(TERRAFORM-CLIENT-SECRET)
+          - task: AzureRmWebAppDeployment@4
+            displayName: Deploy Web App
+            inputs:
+              ConnectionType: "AzureRM"
+              appType: "webApp"
+              WebAppName: "waracletest-appserviceplan-dev"
+              package: "$(System.DefaultWorkingDirectory)/artifact/s"
+              RuntimeStack: "DOTNETCORE|3.1"
+              azureSubscription: "Visual Studio Enterprise Subscription"
