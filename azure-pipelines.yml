@@ -28,8 +28,8 @@ stages:
               projects: "**/*Tests.csproj"
             displayName: "Unit Tests"
           - script: |
-              dotnet restore -s projects 
-              dotnet build --configuration $(buildConfiguration)
+              dotnet restore **/WaracleTechnicalTest.API.csproj
+              dotnet build **/WaracleTechnicalTest.API.csproj --configuration $(buildConfiguration)
             displayName: "build and restore"
           - task: DotNetCoreCLI@2
             inputs:

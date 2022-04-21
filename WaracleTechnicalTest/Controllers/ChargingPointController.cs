@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using WaracleTechnicalTest.API.Services;
 using WaracleTechnicalTest.Models;
 
 namespace WaracleTechnicalTest.API.Controllers
