@@ -49,9 +49,10 @@ namespace WaracleTechnicalTest.API
             app.UseSwagger();
             app.UseSwaggerUI();
 
-
+            if (env.IsDevelopment())
+            {
                 app.UseDeveloperExceptionPage();
-
+            }
 
             app.UseHttpsRedirection();
 
