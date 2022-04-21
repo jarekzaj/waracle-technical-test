@@ -26,11 +26,16 @@ namespace WaracleTechnicalTest.API
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
 
-            if (env.IsDevelopment() || env.IsProduction())
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+                if (env.IsDevelopment() || env.IsProduction())
+
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Test Api");
+                    c.RoutePrefix = string.Empty;
+                }
+            });
 
             if (env.IsDevelopment())
             {
