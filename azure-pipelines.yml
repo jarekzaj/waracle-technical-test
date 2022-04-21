@@ -104,6 +104,6 @@ stages:
               ConnectionType: "AzureRM"
               appType: "webApp"
               WebAppName: "waracletest-appserviceplan-dev"
-              package: "$(System.DefaultWorkingDirectory)/artifact/s"
+              package: "$(System.DefaultWorkingDirectory)/artifact"
               RuntimeStack: "DOTNETCORE|3.1"
               azureSubscription: 'Visual Studio Enterprise Subscription (6c0b6cd4-609d-44f1-b557-a7a701db87a5)'
