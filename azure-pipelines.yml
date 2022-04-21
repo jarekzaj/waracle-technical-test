@@ -38,7 +38,7 @@ stages:
               projects: "**/WaracleTechnicalTest.API.csproj"
               publishWebProjects: false
               modifyOutputPath: true
-              zipAfterPublish: false
+              zipAfterPublish: true
           - task: PublishPipelineArtifact@1
             inputs:
               targetPath: "$(System.DefaultWorkingDirectory)/publish_output"
