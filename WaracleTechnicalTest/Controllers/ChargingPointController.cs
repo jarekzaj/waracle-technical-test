@@ -13,10 +13,12 @@ namespace WaracleTechnicalTest.API.Controllers
     {
 
         private readonly ILogger<ChargingPointController> _logger;
+        private readonly IChargingPointStoreService _chargingPointStoreService;
 
-        public ChargingPointController(ILogger<ChargingPointController> logger)
+        public ChargingPointController(ILogger<ChargingPointController> logger, IChargingPointStoreService chargingPointStoreService)
         {
             _logger = logger;
+            _chargingPointStoreService = chargingPointStoreService;
         }
 
         [HttpGet]
