@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using WaracleTechnicalTest.API.Services;
 using WaracleTechnicalTest.Models;
+using WaracleTechnicalTest.Models.Canonical;
 
 namespace WaracleTechnicalTest.API.Controllers
 {
@@ -12,22 +12,51 @@ namespace WaracleTechnicalTest.API.Controllers
     [Route("[controller]")]
     public class ChargingPointController : ControllerBase
     {
-
-        private readonly ILogger<ChargingPointController> _logger;
         private readonly IChargingPointStoreService _chargingPointStoreService;
 
-        public ChargingPointController(ILogger<ChargingPointController> logger, IChargingPointStoreService chargingPointStoreService)
+        public ChargingPointController(IChargingPointStoreService chargingPointStoreService)
         {
-            _logger = logger;
             _chargingPointStoreService = chargingPointStoreService;
         }
 
         [HttpGet]
-        public IEnumerable<ChargingPoint> Get()
+        public async Task<IActionResult> Get()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new ChargingPoint())
-            .ToArray();
+            try
+            {
+                return Ok((await _chargingPointStoreService.GetChargingPoints()).Select(c => new ChargingPoint(c)));
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post(ChargingPoint chargingPoint)
+        {
+            try
+            {
+                return Ok(new ChargingPoint(await _chargingPointStoreService.UpdateChargingPoint(new DbChargingPoint(chargingPoint))));
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(string id)
+        {
+            try
+            {
+                await _chargingPointStoreService.DeleteChargingPoint(id);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
         }
     }
 }

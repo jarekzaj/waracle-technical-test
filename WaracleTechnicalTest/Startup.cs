@@ -1,9 +1,12 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WaracleTechnicalTest.API.Config;
+using WaracleTechnicalTest.API.Services;
 
 namespace WaracleTechnicalTest.API
 {
@@ -22,10 +25,21 @@ namespace WaracleTechnicalTest.API
             services.AddControllers();
             services.AddSwaggerGen();
 
-            services.AddOptions<CosmosDbConfiguration>().Configure<IConfiguration>((settings, configuration) =>
-            {
-                configuration.GetSection("CosmosDbConfiguration").Bind(settings);
-            });
+            services.AddSingleton<IChargingPointStoreService, ChargingPointStoreService>();
+            services.AddSingleton(InitializeCosmosClientInstanceAsync(Configuration.GetSection("CosmosDbConfiguration")).GetAwaiter().GetResult());
+        }
+
+        private static async Task<ICosmosDbService> InitializeCosmosClientInstanceAsync(IConfigurationSection configurationSection)
+        {
+            string databaseName = configurationSection.GetSection("DatabaseName").Value;
+            string containerName = configurationSection.GetSection("ContainerName").Value;
+            string connectionString = configurationSection.GetSection("ConnectionString").Value;
+            CosmosClient client = new CosmosClient(connectionString);
+            ChargingPointDbService cosmosDbService = new ChargingPointDbService(client, databaseName, containerName);
+            DatabaseResponse database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
+            await database.Database.CreateContainerIfNotExistsAsync(containerName, "/PartitionKey");
+
+            return cosmosDbService;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -33,11 +47,7 @@ namespace WaracleTechnicalTest.API
         {
 
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Test Api");
-                c.RoutePrefix = string.Empty;
-             });
+            app.UseSwaggerUI();
 
             if (env.IsDevelopment())
             {

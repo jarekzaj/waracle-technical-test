@@ -1,37 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using WaracleTechnicalTest.Models;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using WaracleTechnicalTest.Models.Canonical;
 
 namespace WaracleTechnicalTest.API.Services
 {
     public interface IChargingPointStoreService
     {
-        public IEnumerable<ChargingPoint> GetChargingPoints();
-        public IEnumerable<ChargingPoint> GetChargingPoint(string id);
-        public IEnumerable<ChargingPoint> UpdateChargingPoint(ChargingPoint chargingPoint);
-        public IEnumerable<ChargingPoint> DeleteChargingPoint(string id);
+        public Task<IEnumerable<DbChargingPoint>> GetChargingPoints();
+        public Task<DbChargingPoint> UpdateChargingPoint(DbChargingPoint chargingPoint);
+        public Task DeleteChargingPoint(string id);
     }
 
     public class ChargingPointStoreService : IChargingPointStoreService
     {
-        public IEnumerable<ChargingPoint> GetChargingPoints()
+        private readonly ICosmosDbService _cosmosDbService;
+
+        public ChargingPointStoreService(ICosmosDbService cosmosDbService)
         {
-            throw new NotImplementedException();
+            _cosmosDbService = cosmosDbService;
         }
 
-        public IEnumerable<ChargingPoint> GetChargingPoint(string id)
+        public async Task<IEnumerable<DbChargingPoint>> GetChargingPoints()
         {
-            throw new NotImplementedException();
+            var dbChargingPoints =  await _cosmosDbService.GetItems();
+
+            return dbChargingPoints;
         }
 
-        public IEnumerable<ChargingPoint> UpdateChargingPoint(ChargingPoint chargingPoint)
+        public async Task<DbChargingPoint> UpdateChargingPoint(DbChargingPoint chargingPoint)
         {
-            throw new NotImplementedException();
+            return await _cosmosDbService.UpdateItemAsync(chargingPoint);
         }
 
-        public IEnumerable<ChargingPoint> DeleteChargingPoint(string id)
+        public async Task DeleteChargingPoint(string id)
         {
-            throw new NotImplementedException();
+             await _cosmosDbService.DeleteItemAsync(id);
         }
     }
 
