@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30128.74
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaracleTechnicalTest.API", "WaracleTechnicalTest.API.csproj", "{0868C967-43A8-4315-A670-2D9238CCBFBC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaracleTechnicalTest.Models", "..\WaracleTechnicalTest.Models\WaracleTechnicalTest.Models.csproj", "{71B4B93B-5837-4E60-9767-B7BC522E9A6E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaracleTechnicalTest.API.Tests", "..\WaracleTechnicalTest.API.Tests\WaracleTechnicalTest.API.Tests.csproj", "{EF06B503-7E84-4A6E-AECF-C35D9532776D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0F9A28BF-B946-42C9-9700-E657DF499D07}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0868C967-43A8-4315-A670-2D9238CCBFBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0868C967-43A8-4315-A670-2D9238CCBFBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0868C967-43A8-4315-A670-2D9238CCBFBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0868C967-43A8-4315-A670-2D9238CCBFBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71B4B93B-5837-4E60-9767-B7BC522E9A6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71B4B93B-5837-4E60-9767-B7BC522E9A6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71B4B93B-5837-4E60-9767-B7BC522E9A6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71B4B93B-5837-4E60-9767-B7BC522E9A6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF06B503-7E84-4A6E-AECF-C35D9532776D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF06B503-7E84-4A6E-AECF-C35D9532776D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF06B503-7E84-4A6E-AECF-C35D9532776D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF06B503-7E84-4A6E-AECF-C35D9532776D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EF06B503-7E84-4A6E-AECF-C35D9532776D} = {0F9A28BF-B946-42C9-9700-E657DF499D07}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {466D3C13-1C77-4544-8F5F-26D42AF78728}
+	EndGlobalSection
+EndGlobal
