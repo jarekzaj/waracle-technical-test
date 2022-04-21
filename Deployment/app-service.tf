@@ -7,7 +7,7 @@ resource "azurerm_app_service_plan" "tf" {
   reserved = false
   sku {
     tier = "Free"
-    size = "F0"
+    size = "F1"
   }
   tags = {
     environment = "${var.ENV}"
