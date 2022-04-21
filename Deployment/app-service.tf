@@ -6,8 +6,8 @@ resource "azurerm_app_service_plan" "tf" {
   kind     = "Windows"
   reserved = false
   sku {
-    tier = "Free"
-    size = "F1"
+    tier = "Standard"
+    size = "S1"
   }
   tags = {
     environment = "${var.ENV}"
