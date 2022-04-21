@@ -56,7 +56,7 @@ stages:
           - task: TerraformInstaller@0
             displayName: "Install terraform"
             inputs:
-              terraformVersion: "0.12.24"
+              terraformVersion: "1.1.9"
           - task: DownloadPipelineArtifact@2
             displayName: "Download artifacts"
             inputs:
