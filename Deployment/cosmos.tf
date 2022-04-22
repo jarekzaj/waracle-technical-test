@@ -10,7 +10,7 @@ resource "azurerm_cosmosdb_account" "tf" {
   }
 
   geo_location {
-    location = azurerm_cosmosdb_account.tf.location
+    location = "UK West"
     failover_priority = 0
   }
 }
