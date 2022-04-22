@@ -24,6 +24,7 @@ namespace WaracleTechnicalTest.API
         {
             services.AddControllers();
             services.AddSwaggerGen();
+            services.AddApplicationInsightsTelemetry();
 
             services.AddSingleton<IChargingPointStoreService, ChargingPointStoreService>();
             services.AddSingleton(InitializeCosmosClientInstanceAsync(Configuration.GetSection("CosmosDbConfiguration")).GetAwaiter().GetResult());
