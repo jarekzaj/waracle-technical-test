@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
 using WaracleTechnicalTest.API.Services;
@@ -15,10 +16,12 @@ namespace WaracleTechnicalTest.API.Controllers
     public class ChargingPointController : ControllerBase
     {
         private readonly IChargingPointStoreService _chargingPointStoreService;
+        private readonly IValidator<ChargingPoint> _validator;
 
-        public ChargingPointController(IChargingPointStoreService chargingPointStoreService)
+        public ChargingPointController(IChargingPointStoreService chargingPointStoreService, IValidator<ChargingPoint> validator)
         {
             _chargingPointStoreService = chargingPointStoreService;
+            _validator = validator;
         }
 
         /// <summary>
@@ -51,7 +54,16 @@ namespace WaracleTechnicalTest.API.Controllers
         {
             try
             {
-                return Ok(new ChargingPoint(await _chargingPointStoreService.UpdateChargingPoint(new DbChargingPoint(chargingPoint))));
+                var validate = await _validator.ValidateAsync(chargingPoint);
+
+                if (validate.IsValid)
+                {
+                    return Ok(new ChargingPoint(await _chargingPointStoreService.UpdateChargingPoint(new DbChargingPoint(chargingPoint))));
+                }
+                else
+                {
+                    return BadRequest(validate.Errors.Select(x => x.ErrorMessage).ToList());
+                }
             }
             catch (Exception e)
             {

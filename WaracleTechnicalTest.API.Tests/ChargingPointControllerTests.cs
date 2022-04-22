@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
 using NUnit.Framework;
@@ -18,12 +21,14 @@ namespace WaracleTechnicalTest.API.Tests
     {
         private ChargingPointController _controller;
         private IChargingPointStoreService _fakeChargingPointStoreService;
+        private IValidator<ChargingPoint> _fakeValidator;
 
         [SetUp]
         public void Setup()
         {
             _fakeChargingPointStoreService = A.Fake<IChargingPointStoreService>();
-            _controller = new ChargingPointController(_fakeChargingPointStoreService);
+            _fakeValidator = A.Fake<IValidator<ChargingPoint>>();
+            _controller = new ChargingPointController(_fakeChargingPointStoreService, _fakeValidator);
         }
 
         [Test]
@@ -67,6 +72,9 @@ namespace WaracleTechnicalTest.API.Tests
             A.CallTo(() => _fakeChargingPointStoreService.UpdateChargingPoint(A<DbChargingPoint>.Ignored))
                 .Returns(new DbChargingPoint {Id = "12234"});
 
+            A.CallTo(() => _fakeValidator.ValidateAsync(chargingPoint, CancellationToken.None))
+                .Returns(new ValidationResult());
+
             var result = (OkObjectResult)await _controller.Post(chargingPoint);
 
             A.CallTo(() => _fakeChargingPointStoreService.UpdateChargingPoint(A<DbChargingPoint>.Ignored))
@@ -82,13 +90,43 @@ namespace WaracleTechnicalTest.API.Tests
         {
             A.CallTo(() => _fakeChargingPointStoreService.UpdateChargingPoint(A<DbChargingPoint>.Ignored)).Throws<Exception>();
 
+            A.CallTo(() => _fakeValidator.ValidateAsync(A<ChargingPoint>.Ignored, CancellationToken.None))
+                .Returns(new ValidationResult());
+
             var result = (BadRequestResult)await _controller.Post(new ChargingPoint());
 
             Assert.AreEqual(400, result.StatusCode);
         }
 
-
         [Test]
+        public async Task PostReturnsBadRequestIfModelIsNotValid()
+        {
+            var chargingPoint = new ChargingPoint
+            {
+                Id = "12234"
+            };
+
+            var validationResult = new ValidationResult
+            {
+                Errors =
+                {
+                    new ValidationFailure("Test1", "Error1")
+                }
+            };
+
+            A.CallTo(() => _fakeValidator.ValidateAsync(chargingPoint, CancellationToken.None))
+                .Returns(validationResult);
+
+            var result = (BadRequestObjectResult) await _controller.Post(chargingPoint);
+
+            A.CallTo(() => _fakeChargingPointStoreService.UpdateChargingPoint(A<DbChargingPoint>.Ignored))
+                .MustNotHaveHappened();
+
+            Assert.AreEqual(400, result.StatusCode);
+            var resultValue = (List<string>)result.Value;
+            Assert.AreEqual("Error1", resultValue.First());
+        }
+
         public async Task DeleteCallsDeleteChargingPointAndReturnsOk()
         {
             var result = (OkResult)await _controller.Delete("123");
