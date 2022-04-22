@@ -1,11 +1,12 @@
+using System;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using WaracleTechnicalTest.API.Config;
 using WaracleTechnicalTest.API.Services;
 
 namespace WaracleTechnicalTest.API
@@ -23,7 +24,11 @@ namespace WaracleTechnicalTest.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(options =>
+            {
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+            });
             services.AddApplicationInsightsTelemetry();
 
             services.AddSingleton<IChargingPointStoreService, ChargingPointStoreService>();
@@ -49,9 +54,9 @@ namespace WaracleTechnicalTest.API
 
             app.UseSwagger();
 
-                app.UseSwaggerUI();
+            app.UseSwaggerUI();
 
-                app.UseDeveloperExceptionPage();
+            app.UseDeveloperExceptionPage();
 
 
             app.UseHttpsRedirection();

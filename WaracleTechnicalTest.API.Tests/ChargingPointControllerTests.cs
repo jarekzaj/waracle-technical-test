@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using FakeItEasy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos;
 using NUnit.Framework;
 using WaracleTechnicalTest.API.Controllers;
 using WaracleTechnicalTest.API.Services;
@@ -100,6 +102,28 @@ namespace WaracleTechnicalTest.API.Tests
         public async Task DeleteReturnsBadRequestIfExceptionThrown()
         {
             A.CallTo(() => _fakeChargingPointStoreService.DeleteChargingPoint("123")).Throws<Exception>();
+
+            var result = (BadRequestResult)await _controller.Delete("123");
+
+            Assert.AreEqual(400, result.StatusCode);
+        }
+
+        [Test]
+        public async Task DeleteReturnsNotFoundIfCosmosNotFoundExceptionThrown()
+        {
+            var cosmosNotFoundException = new CosmosException("Test", HttpStatusCode.NotFound, 404, "", 1);
+            A.CallTo(() => _fakeChargingPointStoreService.DeleteChargingPoint("123")).Throws(cosmosNotFoundException);
+
+            var result = (NotFoundResult)await _controller.Delete("123");
+
+            Assert.AreEqual(404, result.StatusCode);
+        }
+
+        [Test]
+        public async Task DeleteReturnsBadRequestFOrAnyOtherCosmosExceptions()
+        {
+            var cosmosNotFoundException = new CosmosException("Test", HttpStatusCode.FailedDependency, 404, "", 1);
+            A.CallTo(() => _fakeChargingPointStoreService.DeleteChargingPoint("123")).Throws(cosmosNotFoundException);
 
             var result = (BadRequestResult)await _controller.Delete("123");
 
