@@ -8,6 +8,11 @@ resource "azurerm_cosmosdb_account" "tf" {
   consistency_policy {
     consistency_level = "Session"
   }
+
+  geo_location {
+    location = azurerm_resource_group.tf.location
+    failover_priority = 1
+  }
 }
 
 resource "azurerm_cosmosdb_sql_database" "tf" {
