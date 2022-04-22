@@ -1,6 +1,6 @@
 resource "azurerm_cosmosdb_account" "tf" {
   name                      = "waracletest-cosmosdb-${var.ENV}"
-  location                  = azurerm_resource_group.tf.location
+  location                  = "UK West"
   resource_group_name       = azurerm_resource_group.tf.name
   offer_type                = "Standard"
   kind                      = "GlobalDocumentDB"
@@ -10,7 +10,7 @@ resource "azurerm_cosmosdb_account" "tf" {
   }
 
   geo_location {
-    location = azurerm_resource_group.tf.location
+    location = azurerm_cosmosdb_account.tf.location
     failover_priority = 0
   }
 }
