@@ -22,7 +22,7 @@ resource "azurerm_app_service" "tf" {
   https_only          = true
   app_settings = {
     "APPINSIGHTS_INSTRUMENTATIONKEY"  = azurerm_application_insights.app_insights.instrumentation_key
-    "WEBSITE_RUN_FROM_PACKAGE" = 0
+    "CosmosDbConfiguration__ConnectionString" = azurerm_cosmosdb_account.tf.connection_strings[0]
   }
 
   tags = {
