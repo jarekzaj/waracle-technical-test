@@ -11,7 +11,7 @@ resource "azurerm_cosmosdb_account" "tf" {
 
   geo_location {
     location = azurerm_resource_group.tf.location
-    failover_priority = 1
+    failover_priority = 0
   }
 }
 
