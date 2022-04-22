@@ -98,7 +98,6 @@ stages:
               ARM_ACCESS_KEY: $(TERRAFORM-ACCESS-KEY)
               ARM_CLIENT_ID: $(TERRAFORM-CLIENT-ID)
               ARM_CLIENT_SECRET: $(TERRAFORM-CLIENT-SECRET)
-          - powershell: Get-ChildItem -Path $(System.DefaultWorkingDirectory) -recurse
           - task: AzureRmWebAppDeployment@4
             displayName: Deploy Web App
             inputs:
